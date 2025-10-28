@@ -203,15 +203,33 @@
       y += 6;
 
       // Table content
-      Array.from(orderTable.rows).forEach(row => {
-        const [drug, route, dose, comment] = Array.from(row.cells).map(td => td.textContent);
-        doc.text(drug, 15, y);
-        doc.text(route, 65, y);
-        doc.text(dose, 100, y);
-        doc.text(doc.splitTextToSize(comment, 60), 135, y);
-        y += 6;
-        if (y > 270) { doc.addPage(); y = 20; }
-      });
+      // Table content with wrapping and grid lines
+Array.from(orderTable.rows).forEach(row => {
+  const [drug, route, dose, comment] = Array.from(row.cells).map(td => td.textContent);
+
+  const wrappedComment = doc.splitTextToSize(comment, 60);
+  const rowHeight = Math.max(wrappedComment.length * 5, 6); // adjust row height for wrapped lines
+
+  // Draw row borders (light blue-gray grid)
+  doc.setDrawColor(200, 230, 250);
+  doc.rect(14, y - 4, 182, rowHeight + 4); // full-width box for each row
+
+  // Text placement
+  doc.setTextColor(0, 0, 0);
+  doc.text(drug, 15, y);
+  doc.text(route, 65, y);
+  doc.text(dose, 100, y);
+  doc.text(wrappedComment, 135, y);
+
+  // Advance to next line
+  y += rowHeight + 6;
+
+  // Add new page if needed
+  if (y > 270) {
+    doc.addPage();
+    y = 20;
+  }
+});
 
       // Footer
       y += 10;
